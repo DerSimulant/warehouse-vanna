@@ -3,41 +3,29 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# venvs (alle Unterordner)
-venv/
-**/venv/
-backend/venv/
-
-.env
-**/.env
-
-# Node/Vite (falls Frontend)
-node_modules/
-dist/
-.build/
-.next/
-out/
-
-# Django/Build/Cache
-*.sqlite3
-staticfiles/
-media/
-
-# OS/IDE
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.code-workspace
-
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
 .Python
 env/
 venv/
 ENV/
 .env
 
+# VS Code
+.vscode/
+*.code-workspace
+
+# macOS / Windows Cache
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# SQLite / Local DBs
+*.sqlite3
+
+# Test / Coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.pytest_cache/
