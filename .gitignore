@@ -7,6 +7,8 @@ __pycache__/
 # venvs (alle Unterordner)
 venv/
 **/venv/
+backend/venv/
+
 .env
 **/.env
 
@@ -28,3 +30,14 @@ Thumbs.db
 .vscode/
 .idea/
 *.code-workspace
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+.env
+
