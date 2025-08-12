@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+pydantic
+vanna[chromadb,openai,postgres]
+psycopg[binary]
+python-dotenv

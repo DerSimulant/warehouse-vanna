@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:17
+    container_name: warehouse_postgres
+    environment:
+      POSTGRES_DB: warehouse
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: app1234
+    ports:
+      - "5433:5432"        # Host-Port 5433 -> Container 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
+
