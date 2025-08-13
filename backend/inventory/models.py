@@ -1,4 +1,5 @@
 from django.db import models
+from pgvector.django import VectorField
 
 class Item(models.Model):
     sku = models.CharField(max_length=100, unique=True)
@@ -8,6 +9,16 @@ class Item(models.Model):
     active = models.BooleanField(default=True)
     def __str__(self): return f"{self.sku} - {self.name}"
 
+class ItemAlias(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="aliases")
+    alias = models.CharField(max_length=200)
+
+    class Meta:
+        unique_together = (('item', 'alias'),)
+
+    def __str__(self):
+        return f"{self.alias} → {self.item.sku}"
+
 class Location(models.Model):
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100, blank=True)
@@ -16,6 +27,7 @@ class Location(models.Model):
 class Bin(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     code = models.CharField(max_length=50)
+    embedding = VectorField(dimensions=1536, null=True, blank=True)  # NEU
     class Meta:
         unique_together = (('location','code'),)
     def __str__(self): return f"{self.location.code}-{self.code}"

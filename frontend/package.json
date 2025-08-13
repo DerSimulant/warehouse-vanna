@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@picovoice/porcupine-web": "^3.0.3",
+    "@picovoice/porcupine-web-de-worker": "^2.1.7",
+    "@picovoice/porcupine-web-en-worker": "^2.1.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

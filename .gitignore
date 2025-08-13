@@ -17,3 +17,5 @@ dist/
 # IDE
 .vscode/
 *.code-workspace
+
+.env

@@ -258,8 +258,9 @@ ORDER BY i.sku
 
 # ---- 2d) Bewegungen / Analytics ----
 vn.train(
-    question="Letzte 50 Bewegungen gesamt (SKU, von/nach, ts, qty)",
+    question="Letzte 5 Bewegungen gesamt (SKU, von/nach, ts, qty)",
     sql=f"""
+-- Frage: Letzte 5 Bewegungen (Ledger) für SKU 
 SELECT sl.ts, i.sku,
        fb.code AS from_bin, tb.code AS to_bin,
        sl.qty, sl.ref_type, sl.ref_id
@@ -267,8 +268,11 @@ FROM inventory_stockledger sl
 JOIN inventory_item i ON i.id = sl.item_id
 LEFT JOIN inventory_bin fb ON fb.id = sl.from_bin_id
 LEFT JOIN inventory_bin tb ON tb.id = sl.to_bin_id
+WHERE i.sku = 'M4-12'
 ORDER BY sl.ts DESC
-{limit_clause(50)}
+LIMIT 5;
+
+{limit_clause(5)}
 """)
 
 vn.train(

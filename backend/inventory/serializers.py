@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Location, Bin, ReorderPolicy, StockLedger, Inventory
+from .models import Item, Location, Bin, ReorderPolicy, StockLedger, Inventory, ItemAlias
 
 class InventoryBinSerializer(serializers.Serializer):
     bin = serializers.CharField()
@@ -18,6 +18,11 @@ from .models import Item, Location, Bin, ReorderPolicy, StockLedger, Inventory
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
+        fields = "__all__"
+
+class ItemAliasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemAlias
         fields = "__all__"
 
 class LocationSerializer(serializers.ModelSerializer):
