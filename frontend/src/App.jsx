@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { useAuth } from "./auth/AuthContext";
+import LogoutButton from "./components/LogoutButton";
 
 import { PorcupineWorkerFactory } from "@picovoice/porcupine-web-en-worker";
 
@@ -21,6 +23,7 @@ console.log('PV key present?', Boolean(ACCESS_KEY), 'len:', ACCESS_KEY.length);
 
 
 export default function App() {
+  const { authFetch, user } = useAuth();
   const [text, setText] = useState("Bestand je Bin für SKU M4-12?");
   const [confirm, setConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,7 +79,7 @@ async function startWakeWord() {
     setResp(null);
 
     try {
-      const r = await fetch(INTENT, {
+      const r = await authFetch(INTENT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ text, confirm }),
@@ -159,9 +162,22 @@ async function startWakeWord() {
   return (
     <div className="app">
       <div className="row">
-        <h1>Chatte mit dem Lager</h1>
+        <header className="header">
+        <h1 className="header-title">Laber mit dem Lager</h1>
+        <p className="header-sub">
+          Hört Dir ja sonst eh keiner zu. Und macht nichts, wenn´s schnell geht! </p>
+          <div className="top-right">
+            <div className="user-actions">
+              {user && <span className="user-pill">👤 {user.username}</span>}
+              <LogoutButton />
+              </div>
+
         <div className="badge">Intent: {INTENT}</div>
+       </div>
+        </header>
       </div>
+        
+        
 
       <div className="card" style={{ marginTop: 16 }}>
         <label>Frage ans Lager (Vanna + Intent). Für Aktionen (WE/Bewegung) „Confirm“ aktivieren.</label>

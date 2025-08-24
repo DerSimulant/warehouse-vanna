@@ -32,7 +32,8 @@ APPEND_SLASH = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173","https://lager.popken-eeg.de",
+    "https://lager-api.popken-eeg.de",]
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'inventory',
 ]
@@ -143,6 +145,8 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://lager.popken-eeg.de",
+    "https://lager-api.popken-eeg.de",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -158,6 +162,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=8),  # z. B. 8 Stunden
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # z. B. 7 Tage
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }

@@ -10,7 +10,7 @@ from inventory.views import (
     stock_moves, issue_goods, resolve_item
 )
 
-
+from inventory.views import MeView, LogoutView
 from inventory.views import resolve_item  # ✅ richtige View importieren
 # NICHT: from inventory.views import resolve_bin as resolve_item
 
@@ -30,10 +30,18 @@ urlpatterns = [
     path("api/", include(router.urls)),
 
     # Auth
-    path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-   
+    #path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    #path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    #path("api/auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+
+    # Auth Endpoints
+    path("api/auth/login/",  TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/auth/verify/",  TokenVerifyView.as_view(),  name="token_verify"),
+    path("api/auth/logout/",  LogoutView.as_view(),       name="logout"),
+
+    # Who am I
+    path("api/auth/me/", MeView.as_view(), name="me"),
 
     # Funktionsendpunkte – ALLE unter /api/ und mit trailing slash
     path("api/health/", health, name="health"),

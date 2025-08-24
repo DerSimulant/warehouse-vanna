@@ -6,11 +6,16 @@ from django.db import connection, transaction
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from rapidfuzz import process, fuzz
 
@@ -21,7 +26,38 @@ from .serializers import (
 )
 from .utils import speak
 
+# ------------------- Auth ----------------------------#
 
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        u = request.user
+        return Response({
+            "id": u.id,
+            "username": u.username,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "email": u.email,
+        })
+
+class LogoutView(APIView):
+    """
+    Erwartet im Body den refresh-Token und blacklisted ihn.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            # Auch wenn etwas schief geht, kein Leaken von Details
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
 # ------------------- Fuzzy Kandidaten -------------------
 
 def fuzzy_candidates(q: str, limit: int = 5):

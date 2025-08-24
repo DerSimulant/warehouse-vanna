@@ -16,7 +16,7 @@ app = FastAPI(title="Warehouse Intent Router", version="2.1")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173", "https://lager.popken-eeg.de"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -87,7 +87,7 @@ def _refresh_token() -> bool:
     global ACCESS_TOKEN
     if not REFRESH_TOKEN:
         return False
-    r = requests.post(f"{BACKEND}/api/auth/token/refresh/", json={"refresh": REFRESH_TOKEN}, timeout=10)
+    r = requests.post(f"{BACKEND}/api/auth/refresh/", json={"refresh": REFRESH_TOKEN}, timeout=10)
     if r.ok:
         ACCESS_TOKEN = r.json().get("access")
         return bool(ACCESS_TOKEN)
@@ -460,7 +460,7 @@ def chat(inp: ChatIn, authorization: Optional[str] = Header(None)):
 
         # HELP / SMALL_TALK / Default
         return {
-            "speech_text": "Ich kann helfen mit: Bestand („Bestand M4-12“), Bewegungen, Wareneingang, Umlagerung, Entnahme.",
+            "speech_text": "Du musst lernen Dich besser auszudrücken. Wenn Du so einen Mist fragst, kann Dich niemand verstehen. Ich kann helfen mit: Bestand („Bestand M4-12“), Bewegungen, Wareneingang, Umlagerung, Entnahme.",
             "data": {},
         }
 
