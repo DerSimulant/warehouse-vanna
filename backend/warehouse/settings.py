@@ -13,27 +13,41 @@ from datetime import timedelta
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")  # lädt backend/.env
 
+#das war development
+#load_dotenv(BASE_DIR / ".env")  # lädt backend/.env
+
+# .env lokal nur laden, wenn vorhanden – in Docker kommen ENV-Werte direkt aus Compose
+env_path = BASE_DIR / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l%q)@8pu4+(gosao9*4#mif*^pn6z+smv2hmpe@_q(an5)-vk+'
-
+# DEV SECRET_KEY = 'django-insecure-l%q)@8pu4+(gosao9*4#mif*^pn6z+smv2hmpe@_q(an5)-vk+'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-" + get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEV DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 
 APPEND_SLASH = True
 
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+# DEV ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173","https://lager.popken-eeg.de",
-    "https://lager-api.popken-eeg.de",]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
+#DEV CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173","https://lager.popken-eeg.de","https://lager-api.popken-eeg.de",]
+
+CSRF_TRUSTED_ORIGINS = [s for s in os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173"
+    ).split(",") if s]
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,6 +65,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,18 +100,30 @@ WSGI_APPLICATION = 'warehouse.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+#DEV
+#DATABASES = {
+ #   "default": {
+  #      "ENGINE": "django.db.backends.postgresql",
+   #     "NAME": "warehouse",
+    #    "USER": "appuser",
+     #   "PASSWORD": "app1234",
+      #  "HOST": "127.0.0.1",
+       # "PORT": "5433",                # <-- NEU
+        #"OPTIONS": {"client_encoding": "UTF8"},
+    #}
+#}
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "warehouse",
-        "USER": "appuser",
-        "PASSWORD": "app1234",
-        "HOST": "127.0.0.1",
-        "PORT": "5433",                # <-- NEU
+        "NAME": os.getenv("POSTGRES_DB", "warehouse"),
+        "USER": os.getenv("POSTGRES_USER", "warehouse"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
+        "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),  # in Docker: "db"
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
         "OPTIONS": {"client_encoding": "UTF8"},
+        }
     }
-}
-
 
 
 # Password validation
@@ -133,7 +160,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+# Staticfiles (Admin etc.) – in Docker via collectstatic + Whitenoise ausliefern
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -142,12 +172,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- CORS: KEIN WILDCARD, CREDENTIALS ERLAUBEN ---
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://lager.popken-eeg.de",
-    "https://lager-api.popken-eeg.de",
-]
+# CORS_ALLOWED_ORIGINS = [
+#    "http://localhost:5173",
+#    "http://127.0.0.1:5173",
+#    "https://lager.popken-eeg.de",
+#    "https://lager-api.popken-eeg.de",
+#] 
+
+CORS_ALLOWED_ORIGINS = [s for s in os.getenv(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173"
+    ).split(",") if s]
+
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
